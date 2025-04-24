@@ -16,11 +16,11 @@
 ④ exchangeToMono：任意のステータス処理、カスタムエラー処理、ヘッダー処理など柔軟に制御
 
 ◇その他補足
-　・Bean定義について
+　・Bean定義
 　　WebClientをxmlベースでBean定義しようとしてもどうしてもうまくいかなかった
 　　そのため、JavaベースのBean定義としている
 
-　・リクエスト送信について
+　・リクエスト送信
 　　基本的に以下の2つ
 　　　 - retrieve()：簡単・高速にレスポンスボディを扱えるが、ステータスコード制御は一応可能だがヘッダなど見れない
 　　　   また、ClientResponseを受け取ることができない。
@@ -55,10 +55,27 @@
 　　    └── UnknownHttpStatusCodeException　⇒ 未定義のステータス（218, 599など）へのレスポンス時
 
 　・カスタム例外
-  以下を定義
+　　以下を定義
 　　　- 4xxエラー：ClientErrorException
 　　　- 5xxエラー：ServerErrorException
 　　　- 想定外エラー：UnknownErrorException
+
+　・ログ出力
+　　Bean定義に実装
+　　WebClientのfilter()を使用して、「リクエスト送信前」と「レスポンス受信後」にフックを挟む（割り込み処理を追加する）
+　　ExchangeFilterFunctionを使用してフック（割り込み処理）を定義する。
+　　★処理の流れ★
+　　 ①WebClient呼び出し
+　　 ②logRequestフィルターでログ出力
+　　 ③HTTPリクエスト送信
+　　 ④レスポンス受信
+　　 ⑤logResponseフィルターでログ出力
+　　 ⑥呼び出し元へレスポンスを返却する
+　　
+　　注意点として、ExchangeFilterFunctionはリクエストボディだけは参照できないため、LoggingBodyInserterを使用してリクエストボディはフックする必要がある
+　　LoggingBodyInserterはリクエストボディをログに出力しながら送信するためのラッパークラス
+　　※上記はPOSTリクエスト送信の時に試す
+　　
 
 ◇インデックス
 ■事前準備：カスタム例外作成、WebClientのBean定義、API疎通クラス作成

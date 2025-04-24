@@ -25,9 +25,6 @@ public class Type10Exec {
 			try {
 				// API導通
 				ResponseEntity<List<Resource>> resEntity = client.getEntityListWithHandle(uri, Resource.class);
-				System.out.println(resEntity.getStatusCode());
-				System.out.println(resEntity.getHeaders());
-				resEntity.getBody().forEach(r -> System.out.println(r));
 			} catch (ClientErrorException e) {
 				// 4xxエラーのみハンドリング
 				System.out.println("エラーメッセージ：" + e.getMessage());

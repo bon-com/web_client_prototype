@@ -1,2 +1,2 @@
 # web_client_prototype
-WebClientのモジュールをいろいろ試す
+README.txtを参照
