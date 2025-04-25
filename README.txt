@@ -90,5 +90,8 @@
 ■type09：GET通信（exchangeToMono）で、レスポンスをResponseEntityで取得（ボディ部：オブジェクト）
 ■type10：GET通信（exchangeToMono）で、レスポンスをResponseEntityで取得（ボディ部：オブジェクトリスト）
 ■type11：retrieveでリクエスト送信した際に例外ハンドリング
-
+■type12：POST通信（retrieve + toBodilessEntity）で、レスポンスをResponseEntityで取得（ボディ部：なし）
+■type13：POST通信（exchangeToMono）で、HTTPステータスのみレスポンスを取得
+■type14：POST通信（exchangeToMono）で、レスポンスをResponseEntityで取得（ボディ部：なし、リクエストボディをログ出力）
+■type15：おまけ xml取得
 

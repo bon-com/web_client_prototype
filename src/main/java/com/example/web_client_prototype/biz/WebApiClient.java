@@ -5,10 +5,12 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import com.example.web_client_prototype.biz.logging.LoggingBodyInserter;
 import com.example.web_client_prototype.exception.ClientErrorException;
 import com.example.web_client_prototype.exception.ServerErrorException;
 import com.example.web_client_prototype.exception.UnknownErrorException;
@@ -252,6 +254,65 @@ public class WebApiClient {
 
 					// 2xxステータス
 					return res.toEntityList(responseType);
+				})
+				.block();
+	}
+	
+	/**
+	 * POST通信を行う
+	 * レスポンスはボディ部なしのResponseEntityで取得
+	 * @param uri
+	 * @param requestBody
+	 * @return
+	 */
+	public ResponseEntity<Void> postForEntityWithNoBody(URI uri, Object requestBody) {
+	    return webClient.post()
+	            .uri(uri)
+	            .bodyValue(requestBody)
+	            .retrieve()
+	            .toBodilessEntity() // レスポンスボディを無視
+	            .block();
+	}
+	
+	/**
+	 * POST通信を行う
+	 * HTTPステータスを返却
+	 * @param requestBody
+	 */
+	public HttpStatus postForStatus(URI uri, Object requestBody) {
+	    return webClient.post()
+	            .uri(uri)
+	            .bodyValue(requestBody)
+	            .exchangeToMono(response -> Mono.just(response.statusCode()))
+	            .block();
+	}
+	
+
+	public ResponseEntity<Void> postForEntityWithHandle(URI uri, Object requestBody) {
+		return webClient.post()
+				.uri(uri)
+				.body(LoggingBodyInserter.fromObject(requestBody)) // リクエストボディをログ出力
+				.exchangeToMono(res -> { // ClientResponseが返却される
+					if (res.statusCode().is4xxClientError()) {
+						// 4xxエラー
+						return res.createException()
+								.flatMap(
+										ex -> Mono.error(new ClientErrorException("Client Error: " + ex.getMessage(),
+												ex.getStatusCode())));
+					} else if (res.statusCode().is5xxServerError()) {
+						// 5xxエラー
+						return res.createException()
+								.flatMap(
+										ex -> Mono.error(new ServerErrorException("Server Error: " + ex.getMessage())));
+					} else if (!res.statusCode().is2xxSuccessful()) {
+						// 想定外エラー（2xx, 4xx, 5xx以外）
+						return res.createException()
+								.flatMap(ex -> Mono
+										.error(new UnknownErrorException("Unexpected Error: " + ex.getMessage())));
+					}
+
+					// 2xxステータス
+					return res.toEntity(Void.class);
 				})
 				.block();
 	}

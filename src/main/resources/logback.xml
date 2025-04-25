@@ -1,29 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
 	<!-- コンソール出力の設定 -->
-	<appender name="STDOUT"
-		class="ch.qos.logback.core.ConsoleAppender">
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<filter class="ch.qos.logback.classic.filter.LevelFilter">
+			<level>DEBUG</level>
+			<onMatch>ACCEPT</onMatch>
+			<onMismatch>DENY</onMismatch>
+		</filter>
 		<encoder>
-			<pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} -
-				%msg%n</pattern>
+			<pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n</pattern>
 		</encoder>
 	</appender>
 
-	<!--  JNDI のエラーログを抑制 -->
+	<!-- JNDI のエラーログを抑制 -->
 	<logger name="org.springframework.jndi" level="WARN" />
-
-	<!-- ファイル出力の設定 -->
-<!-- 	<appender name="FILE" class="ch.qos.logback.core.FileAppender">
-		<file>C:/workspace/prototype/logs/app.log</file>
-		<encoder>
-			<pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} -
-				%msg%n</pattern>
-		</encoder>
-	</appender> -->
-
+	
 	<!-- ログレベルの設定 -->
 	<root level="DEBUG">
 		<appender-ref ref="STDOUT" />
-		<!-- <appender-ref ref="FILE" /> -->
 	</root>
 </configuration>
