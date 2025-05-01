@@ -94,4 +94,4 @@
 ■type13：POST通信（exchangeToMono）で、HTTPステータスのみレスポンスを取得
 ■type14：POST通信（exchangeToMono）で、レスポンスをResponseEntityで取得（ボディ部：なし、リクエストボディをログ出力）
 ■type15：おまけ xml取得
-
+■type16：汎用メソッドを作成して、すべてのHTTPメソッドを実行
