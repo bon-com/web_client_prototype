@@ -1,4 +1,4 @@
-package com.example.web_client_prototype.biz.config;
+package com.example.web_client_prototype.config;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

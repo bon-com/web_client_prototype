@@ -10,4 +10,6 @@
 
 	<!-- コンポーネントスキャン -->
 	<context:component-scan base-package="com.example.web_client_prototype.biz" />
+	<!-- WebClientのBean定義 -->
+	<bean class="com.example.web_client_prototype.config.WebClientConfig"/>
 </beans>
