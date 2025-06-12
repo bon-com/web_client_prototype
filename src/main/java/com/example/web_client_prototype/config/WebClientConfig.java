@@ -1,5 +1,7 @@
 package com.example.web_client_prototype.config;
 
+import java.time.Duration;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
@@ -11,6 +13,9 @@ import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import io.netty.channel.ChannelOption;
+import io.netty.handler.timeout.ReadTimeoutHandler;
+import io.netty.handler.timeout.WriteTimeoutHandler;
 import reactor.core.publisher.Mono;
 import reactor.netty.http.client.HttpClient;
 
@@ -24,7 +29,13 @@ public class WebClientConfig {
 
 	@Bean
 	public HttpClient httpClient() {
-		return HttpClient.create();
+	    return HttpClient.create()
+	            .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000) // 接続タイムアウト（5秒）
+	            .doOnConnected(conn -> 
+	                conn.addHandlerLast(new ReadTimeoutHandler(5))   // 読み取りタイムアウト（5秒）
+	                    .addHandlerLast(new WriteTimeoutHandler(5))  // 書き込みタイムアウト（5秒）
+	            )
+	            .responseTimeout(Duration.ofSeconds(10)); // レスポンス全体のタイムアウト（10秒）
 	}
 
 	@Bean

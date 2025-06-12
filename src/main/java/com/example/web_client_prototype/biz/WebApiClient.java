@@ -3,6 +3,8 @@ package com.example.web_client_prototype.biz;
 import java.net.URI;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatus;
@@ -23,6 +25,8 @@ import reactor.core.publisher.Mono;
 @Component
 public class WebApiClient {
 
+	private static final Logger logger = LoggerFactory.getLogger(WebApiClient.class);
+	
 	@Autowired
 	private WebClient webClient;
 
@@ -316,5 +320,90 @@ public class WebApiClient {
 				})
 				.block();
 	}
+	
+	/**
+	 * GETリクエストを行ない、レスポンスボディを指定した型で取得
+	 * エラー時はカスタム例外をスローする
+	 * @param <T>
+	 * @param uri
+	 * @param responseType
+	 * @return
+	 */
+	public <T> T getBodyWithHandleError(URI uri, Class<T> responseType) {
+		return webClient.get()
+				.uri(uri)
+				.exchangeToMono(res -> { // ClientResponseが返却される
+					if (res.statusCode().is4xxClientError()) {
+						// 4xxエラー
+						return res.createException()
+								.flatMap(
+										ex -> Mono.error(new ClientErrorException("Client Error: " + ex.getMessage(),
+												ex.getStatusCode())));
+					} else if (res.statusCode().is5xxServerError()) {
+						// 5xxエラー
+						return res.createException()
+								.flatMap(
+										ex -> Mono.error(new ServerErrorException("Server Error: " + ex.getMessage())));
+					} else if (!res.statusCode().is2xxSuccessful()) {
+						// 想定外エラー（2xx, 4xx, 5xx以外）
+						return res.createException()
+								.flatMap(ex -> Mono
+										.error(new UnknownErrorException("Unexpected Error: " + ex.getMessage())));
+					}
 
+					// 2xxステータス
+					return res.bodyToMono(responseType);
+				})
+				.doOnError(e -> {
+					// doOnError：エラーが発生したときにログ出力や通知などの副作用（ログ、監視）を行うだけ
+					logger.warn("WebClientエラー発生: {}", e.toString());
+				})
+				.block();
+	}
+
+	/**
+	 * GETリクエストを行ない、レスポンスボディを指定した型で取得
+	 * エラー時はカスタム例外をスローする
+	 * @param <T>
+	 * @param uri
+	 * @param responseType
+	 * @return
+	 */
+	public <T> T getBodyWithHandleError2(URI uri, Class<T> responseType) {
+		return webClient.get()
+				.uri(uri)
+				.exchangeToMono(res -> { // ClientResponseが返却される
+					if (res.statusCode().is4xxClientError()) {
+						// 4xxエラー
+						return res.createException()
+								.flatMap(
+										ex -> Mono.error(new ClientErrorException("Client Error: " + ex.getMessage(),
+												ex.getStatusCode())));
+					} else if (res.statusCode().is5xxServerError()) {
+						// 5xxエラー
+						return res.createException()
+								.flatMap(
+										ex -> Mono.error(new ServerErrorException("Server Error: " + ex.getMessage())));
+					} else if (!res.statusCode().is2xxSuccessful()) {
+						// 想定外エラー（2xx, 4xx, 5xx以外）
+						return res.createException()
+								.flatMap(ex -> Mono
+										.error(new UnknownErrorException("Unexpected Error: " + ex.getMessage())));
+					}
+
+					// 2xxステータス
+					return res.bodyToMono(responseType);
+				})
+				.doOnError(e -> { // doOnError：エラーが発生したときにログ出力や通知などの副作用（ログ、監視）を行うだけ
+					logger.warn("WebClientエラー発生: {}", e.toString());
+				})
+				.onErrorResume(e -> { // リアクティブストリーム（Mono / Flux）内で発生した あらゆる例外（Throwable）をキャッチして処理する
+					if (e instanceof ClientErrorException || e instanceof ServerErrorException || e instanceof UnknownErrorException) {
+						return Mono.error(e);
+					} else {
+						return Mono.error(new IllegalStateException("想定外エラー", e));
+					}
+				})
+				.block();
+	}
 }

@@ -75,7 +75,13 @@
 　　注意点として、ExchangeFilterFunctionはリクエストボディだけは参照できないため、LoggingBodyInserterを使用してリクエストボディはフックする必要がある
 　　LoggingBodyInserterはリクエストボディをログに出力しながら送信するためのラッパークラス
 　　※上記はPOSTリクエスト送信の時に試す
-　　
+
+　・ログ出力その２
+　　処理の中でdoOnErrorを使うことでログ出力を行うことができる
+
+　・あらゆるエラーをカバーしたいとき
+　　onErrorResumeを使用する
+　　　⇒リアクティブストリーム（Mono / Flux）内で発生した あらゆる例外（Throwable）をキャッチして処理する
 
 ◇インデックス
 ■事前準備：カスタム例外作成、WebClientのBean定義、API疎通クラス作成
@@ -95,3 +101,5 @@
 ■type14：POST通信（exchangeToMono）で、レスポンスをResponseEntityで取得（ボディ部：なし、リクエストボディをログ出力）
 ■type15：おまけ xml取得
 ■type16：汎用メソッドを作成して、すべてのHTTPメソッドを実行
+■type17：doOnErrorでログ出力する
+■type18：onErrorResumeで例外ハンドリング
