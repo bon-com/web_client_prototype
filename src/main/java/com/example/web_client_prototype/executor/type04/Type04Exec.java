@@ -16,7 +16,7 @@ public class Type04Exec {
 
 			// URI定義
 			URI uri = UriComponentsBuilder
-					.fromUriString("http://localhost:8080/rest_prototype/type5/")
+					.fromUriString("http://localhost:8080/rest_prototype/type1/1")
 					.build()
 					.toUri();
 
