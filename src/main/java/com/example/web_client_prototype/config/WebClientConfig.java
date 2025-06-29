@@ -81,7 +81,7 @@ public class WebClientConfig {
 	private ExchangeFilterFunction logResponse() {
 		return ExchangeFilterFunction.ofResponseProcessor(res -> {
 			// HTTPステータスとヘッダー情報取得
-			StringBuilder sb = createCommonResLog(res);
+			StringBuilder sb = createLogWithoutBody(res);
 			
 			if (res.headers().contentLength().orElse(0L) == 0 && !res.headers().contentType().isPresent()) {
 				// ボディなしの場合
@@ -110,12 +110,11 @@ public class WebClientConfig {
 	}
 
 	/**
-	 * レスポンスログの共通処理
-	 * ステータスとヘッダーのログ情報を保持したStringBuilderを作成する
+	 * レスポンスボディ以外のログ情報を作成する
 	 * @param res
 	 * @return
 	 */
-	private StringBuilder createCommonResLog(ClientResponse res) {
+	private StringBuilder createLogWithoutBody(ClientResponse res) {
 		var sb = new StringBuilder();
 		sb.append("\n\n----------★★レスポンス★★----------\n")
 				.append("★Response Status Code: ").append(res.statusCode()).append("\n")
