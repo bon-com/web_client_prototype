@@ -80,20 +80,21 @@ public class WebClientConfig {
 	 */
 	private ExchangeFilterFunction logResponse() {
 		return ExchangeFilterFunction.ofResponseProcessor(res -> {
-
+			// HTTPステータスとヘッダー情報取得
+			StringBuilder sb = createCommonResLog(res);
+			
 			if (res.headers().contentLength().orElse(0L) == 0 && !res.headers().contentType().isPresent()) {
 				// ボディなしの場合
-				StringBuilder sb = createCommonResLog(res);
+				
 				sb.append("★Response Body: ").append("No Body\n");
 				logger.debug(sb.toString());
 
 				return Mono.just(res);
 			}
 
-			// レスポンスボディをキャッシュしてログに出す
+			// ボディありの場合
 			return res.bodyToMono(String.class)
 					.flatMap(body -> {
-						StringBuilder sb = createCommonResLog(res);
 						sb.append("★Response Body: ").append(body).append("\n");
 						logger.debug(sb.toString()); // ログにボディ部追加
 
