@@ -83,7 +83,13 @@ public class WebClientConfig {
 			// HTTPステータスとヘッダー情報取得
 			StringBuilder sb = createLogWithoutBody(res);
 			
-			if (res.headers().contentLength().orElse(0L) == 0 && !res.headers().contentType().isPresent()) {
+			// レスポンスボディ判定
+			long length = res.headers().contentLength().orElse(-1L);
+			boolean hasChunked = res.headers().asHttpHeaders()
+			    .getFirst("Transfer-Encoding") != null &&
+			    res.headers().asHttpHeaders().getFirst("Transfer-Encoding").equalsIgnoreCase("chunked");
+
+			if (length == 0 && !hasChunked) {
 				// ボディなしの場合
 				
 				sb.append("★Response Body: ").append("No Body\n");
