@@ -4,6 +4,8 @@ import java.net.URI;
 import java.util.Collections;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
@@ -25,6 +27,8 @@ import reactor.core.publisher.Mono;
  */
 @Component
 public class WebClientHelper {
+	
+	private static final Logger logger = LoggerFactory.getLogger(WebClientHelper.class);
 	
 	@Autowired
 	private WebClient webClient;
@@ -94,7 +98,21 @@ public class WebClientHelper {
 
 	    Mono<ResponseEntity<T>> mono = (request.getBody() != null)
 	        ? spec.body(LoggingBodyInserter.fromObject(request.getBody())).exchangeToMono(res -> handleResponse(res, typeRef))
-	        : spec.exchangeToMono(res -> handleResponse(res, typeRef));
+	        : spec.exchangeToMono(res -> handleResponse(res, typeRef))
+			.doOnError(e -> {
+				logger.warn("WebClientエラー発生: {}", e.toString());
+			})
+	        .onErrorResume(e -> {
+	            // 特定の想定された例外はそのまま通す
+	            if (e instanceof ClientErrorException ||
+	                e instanceof ServerErrorException ||
+	                e instanceof UnknownErrorException) {
+	                return Mono.error(e); // rethrow
+	            } else {
+	                // 想定外の例外を IllegalStateException にラップして通知
+	                return Mono.error(new IllegalStateException("想定外エラー", e));
+	            }
+	        });
 
 	    return mono.block();
 	}

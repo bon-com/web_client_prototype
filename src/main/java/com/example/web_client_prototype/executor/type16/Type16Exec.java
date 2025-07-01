@@ -35,13 +35,13 @@ public class Type16Exec {
 			
 			try {
 				// ------------GET------------
-				ResponseEntity<List<Resource>> resEntity = helper.callForEntity(
-						"http://localhost:8080/rest_prototype/type5/", 
+				ResponseEntity<Resource> resEntity = helper.callForEntity(
+						"http://localhost:8080/rest_prototype/type1/1", 
 						HttpMethod.GET, 
 						null, 
 						null, 
 						null,
-						new ParameterizedTypeReference<List<Resource>>() {});
+						new ParameterizedTypeReference<Resource>() {});
 			} catch (WebClientResponseException e) {
 				e.printStackTrace();
 			}

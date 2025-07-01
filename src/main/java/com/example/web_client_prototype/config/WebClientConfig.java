@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.web.reactive.function.client.ClientResponse;
@@ -28,7 +29,7 @@ public class WebClientConfig {
 	@Bean
 	public HttpClient httpClient() {
 	    return HttpClient.create()
-	            .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000) // 接続タイムアウト（5秒）
+	            .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 10000) // 接続タイムアウト（10秒）
 	            .responseTimeout(Duration.ofSeconds(10)); // レスポンス全体のタイムアウト（10秒）
 	}
 
@@ -82,16 +83,18 @@ public class WebClientConfig {
 		return ExchangeFilterFunction.ofResponseProcessor(res -> {
 			// HTTPステータスとヘッダー情報取得
 			StringBuilder sb = createLogWithoutBody(res);
-			
+
 			// レスポンスボディ判定
 			long length = res.headers().contentLength().orElse(-1L);
 			boolean hasChunked = res.headers().asHttpHeaders()
-			    .getFirst("Transfer-Encoding") != null &&
-			    res.headers().asHttpHeaders().getFirst("Transfer-Encoding").equalsIgnoreCase("chunked");
+					.getFirst("Transfer-Encoding") != null &&
+					res.headers().asHttpHeaders().getFirst("Transfer-Encoding").equalsIgnoreCase("chunked");
 
-			if (length == 0 && !hasChunked) {
+			if ((length == 0 && !hasChunked)
+					|| res.statusCode() == HttpStatus.NO_CONTENT // 204
+				    || res.statusCode() == HttpStatus.RESET_CONTENT // 205
+				    || res.statusCode() == HttpStatus.NOT_MODIFIED) { // 304
 				// ボディなしの場合
-				
 				sb.append("★Response Body: ").append("No Body\n");
 				logger.debug(sb.toString());
 
