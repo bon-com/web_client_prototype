@@ -23,14 +23,15 @@ public class Type16Exec {
 				// リクエストボディ
 				var body = new Resource("4", "パリ", LocalDate.of(2025, 5, 1));
 				var req = WebClientRequest.builder()
-						.url("http://localhost:8080/rest_prototype/type2/create/")
 						.method(HttpMethod.POST)
+						.url("http://localhost:8080/rest_prototype/type2/create/")
 						.body(body)
 						.build();
 
 				ResponseEntity<Void> resEntity = helper.callForEntity(req,
 						new ParameterizedTypeReference<Void>() {
 						});
+				
 				System.out.println("★★★動作確認★★★");
 				System.out.println("★ステータス★： " + resEntity.getStatusCode());
 				System.out.println("★ヘッダー★： " + resEntity.getHeaders());
@@ -42,14 +43,16 @@ public class Type16Exec {
 			try {
 				// ------------GET------------
 				var req = WebClientRequest.builder()
-						.url("http://localhost:8080/rest_prototype/type1/{id}")
 						.method(HttpMethod.GET)
+						.url("http://localhost:8080/rest_prototype/type1/{id}")
 						.pathParam("id", "1") // パスパラメータ
 						.build();
+				
 				ResponseEntity<Resource> resEntity = helper.callForEntity(
 						req,
 						new ParameterizedTypeReference<Resource>() {
 						});
+				
 				System.out.println("★★★動作確認★★★");
 				System.out.println("★ステータス★： " + resEntity.getStatusCode());
 				System.out.println("★ヘッダー★： " + resEntity.getHeaders());
@@ -61,8 +64,8 @@ public class Type16Exec {
 			try {
 				// ------------GET------------
 				var req = WebClientRequest.builder()
-						.url("http://localhost:8080/rest_prototype/type5")
 						.method(HttpMethod.GET)
+						.url("http://localhost:8080/rest_prototype/type5")
 						.queryParam("name", "ご") // クエリパラメータ
 						.build();
 
@@ -70,6 +73,7 @@ public class Type16Exec {
 						req,
 						new ParameterizedTypeReference<List<Resource>>() {
 						});
+				
 				System.out.println("★★★動作確認★★★");
 				System.out.println("★ステータス★： " + resEntity.getStatusCode());
 				System.out.println("★ヘッダー★： " + resEntity.getHeaders());
@@ -83,16 +87,17 @@ public class Type16Exec {
 				// リクエストボディ
 				var body = new Resource("4", "パソコン", LocalDate.of(2025, 3, 1));
 				var req = WebClientRequest.builder()
-						.url("http://localhost:8080/rest_prototype/type3/{id}/")
 						.method(HttpMethod.PUT)
-						.body(body)
+						.url("http://localhost:8080/rest_prototype/type3/{id}/")
 						.pathParam("id", "4")
+						.body(body)
 						.build();
 				
 				ResponseEntity<Void> resEntity = helper.callForEntity(
 						req,
 						new ParameterizedTypeReference<Void>() {
 						});
+				
 				System.out.println("★★★動作確認★★★");
 				System.out.println("★ステータス★： " + resEntity.getStatusCode());
 				System.out.println("★ヘッダー★： " + resEntity.getHeaders());
@@ -104,8 +109,8 @@ public class Type16Exec {
 			try {
 				// ------------DELETE------------
 				var req = WebClientRequest.builder()
-						.url("http://localhost:8080/rest_prototype/type4/{id}")
 						.method(HttpMethod.DELETE)
+						.url("http://localhost:8080/rest_prototype/type4/{id}")
 						.pathParam("id", "4")
 						.build();
 
@@ -123,8 +128,8 @@ public class Type16Exec {
 			}
 			
 			var req = WebClientRequest.builder()
-					.url("http://localhost:8080/rest_prototype/type5")
 					.method(HttpMethod.GET)
+					.url("http://localhost:8080/rest_prototype/type5")
 					.build();
 
 			ResponseEntity<List<Resource>> resEntity = helper.callForEntity(
