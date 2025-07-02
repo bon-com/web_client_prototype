@@ -45,14 +45,14 @@ public class WebClientHelper {
 	 * @param typeRef
 	 * @return
 	 */
-	private <T> ResponseEntity<T> call(WebClientRequest request, ParameterizedTypeReference<T> typeRef) {
+	private <T> ResponseEntity<T> call(WebClientRequest req, ParameterizedTypeReference<T> typeRef) {
 	    WebClient.RequestBodySpec spec = webClient
-	        .method(request.getMethod())
-	        .uri(request.getUri())
-	        .headers(httpHeaders -> httpHeaders.addAll(request.getHeaders()));
+	        .method(req.getMethod())
+	        .uri(req.getUri())
+	        .headers(httpHeaders -> httpHeaders.addAll(req.getHeaders()));
 
-	    Mono<ResponseEntity<T>> mono = (request.getBody() != null)
-	        ? spec.body(LoggingBodyInserter.fromObject(request.getBody())).exchangeToMono(res -> handleResponse(res, typeRef))
+	    Mono<ResponseEntity<T>> mono = (req.getBody() != null)
+	        ? spec.body(LoggingBodyInserter.fromObject(req.getBody())).exchangeToMono(res -> handleResponse(res, typeRef))
 	        : spec.exchangeToMono(res -> handleResponse(res, typeRef))
 			.doOnError(e -> {
 				logger.warn("WebClientエラー発生: {}", e.toString());
