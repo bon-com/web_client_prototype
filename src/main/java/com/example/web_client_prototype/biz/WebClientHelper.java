@@ -1,19 +1,13 @@
 package com.example.web_client_prototype.biz;
 
-import java.net.URI;
-import java.util.Collections;
-import java.util.Map;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import com.example.web_client_prototype.biz.logging.LoggingBodyInserter;
 import com.example.web_client_prototype.exception.ClientErrorException;
@@ -27,64 +21,25 @@ import reactor.core.publisher.Mono;
  */
 @Component
 public class WebClientHelper {
-	
+	/** ロガー */
 	private static final Logger logger = LoggerFactory.getLogger(WebClientHelper.class);
 	
 	@Autowired
 	private WebClient webClient;
 	
 	/**
-	 * 汎用的なAPI通信メソッド
+	 * 汎用的なAPI通信を行う
 	 * @param <T>
-	 * @param url
-	 * @param method
-	 * @param body
-	 * @param queryParams
-	 * @param pathParams
+	 * @param req
 	 * @param typeRef
-	 * @return ResponseEntity<T>またはResponseEntity<List<T>>などを返却
+	 * @return
 	 */
-	public <T> ResponseEntity<T> callForEntity(String url, HttpMethod method, Object body, 
-			Map<String, Object> queryParams, Map<String, Object> pathParams, ParameterizedTypeReference<T> typeRef) {
-		
-		URI uri = createUri(url, queryParams, pathParams);
-		WebClientRequest req = WebClientRequest.builder()
-				.uri(uri)
-				.method(method)
-				.header("Cookie", "xxxx") // 追加したいヘッダー項目があれば
-				.body(body)
-				.build();
-		
+	public <T> ResponseEntity<T> callForEntity(WebClientRequest req, ParameterizedTypeReference<T> typeRef) {
 		return call(req, typeRef);
 	}
 	
 	/**
-	 * URIを作成
-	 * @param url
-	 * @param queryParams
-	 * @param pathParams
-	 * @return
-	 */
-	private URI createUri(String url, Map<String, Object> queryParams, Map<String, Object> pathParams) {
-		UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(url);
-
-		// クエリパラメータ設定
-		if (queryParams != null) {
-			for (Map.Entry<String, Object> entry : queryParams.entrySet()) {
-				builder.queryParam(entry.getKey(), entry.getValue());
-			}
-		}
-
-		// 最終的にURIを生成
-		URI uri = builder.buildAndExpand(pathParams != null ? pathParams : Collections.emptyMap()) // パスパラメータ設定
-				.encode() // URIエンコード
-				.toUri();
-		
-		return uri;
-	}
-	
-	/**
-	 * API疎通を行う
+	 * リクエスト送信
 	 * @param <T>
 	 * @param request
 	 * @param typeRef
