@@ -30,8 +30,7 @@ public class Type16Exec {
 				
 				// API通信
 				ResponseEntity<Void> resEntity = helper.callForEntity(req,
-						new ParameterizedTypeReference<Void>() {
-						});
+						new ParameterizedTypeReference<Void>() {});
 				
 				// 動作確認
 				System.out.println("★★★動作確認★★★");
@@ -52,10 +51,8 @@ public class Type16Exec {
 						.build();
 				
 				// API通信
-				ResponseEntity<Resource> resEntity = helper.callForEntity(
-						req,
-						new ParameterizedTypeReference<Resource>() {
-						});
+				ResponseEntity<Resource> resEntity = helper.callForEntity(req,
+						new ParameterizedTypeReference<Resource>() {});
 				
 				// 動作確認
 				System.out.println("★★★動作確認★★★");
@@ -76,10 +73,8 @@ public class Type16Exec {
 						.build();
 
 				// API通信
-				ResponseEntity<List<Resource>> resEntity = helper.callForEntity(
-						req,
-						new ParameterizedTypeReference<List<Resource>>() {
-						});
+				ResponseEntity<List<Resource>> resEntity = helper.callForEntity(req,
+						new ParameterizedTypeReference<List<Resource>>() {});
 				
 				// 動作確認
 				System.out.println("★★★動作確認★★★");
@@ -102,10 +97,8 @@ public class Type16Exec {
 						.build();
 				
 				// API通信				
-				ResponseEntity<Void> resEntity = helper.callForEntity(
-						req,
-						new ParameterizedTypeReference<Void>() {
-						});
+				ResponseEntity<Void> resEntity = helper.callForEntity(req,
+						new ParameterizedTypeReference<Void>() {});
 				
 				// 動作確認
 				System.out.println("★★★動作確認★★★");
@@ -126,10 +119,8 @@ public class Type16Exec {
 						.build();
 
 				// API通信
-				ResponseEntity<List<Resource>> resEntity = helper.callForEntity(
-						req,
-						new ParameterizedTypeReference<List<Resource>>() {
-						});
+				ResponseEntity<List<Resource>> resEntity = helper.callForEntity(req,
+						new ParameterizedTypeReference<List<Resource>>() {});
 
 				// 動作確認
 				System.out.println("★★★動作確認★★★");
@@ -146,13 +137,10 @@ public class Type16Exec {
 					.url("http://localhost:8080/rest_prototype/type5")
 					.build();
 
-			ResponseEntity<List<Resource>> resEntity = helper.callForEntity(
-					req,
-					new ParameterizedTypeReference<List<Resource>>() {
-					});
-			resEntity.getBody().forEach(r -> System.out.println(r));
+			ResponseEntity<List<Resource>> resEntity = helper.callForEntity(req,
+					new ParameterizedTypeReference<List<Resource>>() {});
 			
-
+			resEntity.getBody().forEach(r -> System.out.println(r));
 		}
 	}
 }
